@@ -1,0 +1,17 @@
+{
+    "name": "InnRaum",
+    "version": "0.0.1",
+    "description": "RoboBit Extension",
+    "dependencies": {
+        "core": "*",
+        "microphone": "*"
+    },
+    "files": [
+        "main.ts",
+        "README.md"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "public": true
+}
