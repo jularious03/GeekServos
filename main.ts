@@ -1,4 +1,4 @@
-//% color="#FFC0CB" icon="\u489" block="InnRaum"
+//% color="#FFC0CB" block="InnRaum"
 namespace InnRaum {
   /**
    * Shows a greeting on the LED-Pad
