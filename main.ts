@@ -4,7 +4,7 @@ namespace InnRaum {
    * Sets the color of LED 0 & 1 (the eyes)
    * @param color: the color set for LED 0 & 1
    */
-  //% block="set color for eyes"
+  //% block="set %color for eyes"
   export function setcolorEyes(color: NeoPixelColors): void {
     const leds = robotbit.rgb();
 
@@ -17,7 +17,7 @@ namespace InnRaum {
    * Sets the color of LED 2 & 3 (the feeler)
    * @param color : the color set for LED 2 & 3
    */
-  //% block="set color for feeler"
+  //% block="set %color for feeler"
   export function setcolorFeeler(color: NeoPixelColors): void {
     const leds = robotbit.rgb();
 
@@ -30,7 +30,7 @@ namespace InnRaum {
    *
    * @returns the measurement of soil moisture sensor in percent
    */
-  //% block="measure soil moisture in percent"
+  //% block="measure soil moisture %pin in percent"
   export function measureSoilMoisture(pin: AnalogPin): number {
     const value = pins.analogReadPin(pin);
     return mapValue(value, 218, 300, 0, 100);
@@ -40,7 +40,7 @@ namespace InnRaum {
    *
    * @returns the measurement of the ultrasonic sensor in centimeter
    */
-  //% block="measure distance in cm"
+  //% block="measure distance in cm with %trigPin and %echoPin"
   export function measureDistance(
     trigPin: DigitalPin,
     echoPin: DigitalPin,
