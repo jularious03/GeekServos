@@ -4,7 +4,8 @@
     "description": "RoboBit Extension",
     "dependencies": {
         "core": "*",
-        "microphone": "*"
+        "microphone": "*",
+        "robotbit": "github:kittenbot/pxt-robotbit"
     },
     "files": [
         "main.ts",
