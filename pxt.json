@@ -5,7 +5,8 @@
     "dependencies": {
         "core": "*",
         "microphone": "*",
-        "robotbit": "github:kittenbot/pxt-robotbit"
+        "robotbit": "github:kittenbot/pxt-robotbit",
+        "sonar": "https://github.com/microsoft/pxt-sonar"
     },
     "files": [
         "main.ts",
