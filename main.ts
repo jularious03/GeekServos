@@ -30,7 +30,7 @@ namespace InnRaum {
    *
    * @returns the measurement of soil moisture sensor in percent
    */
-  //% block="measure soil moisture in %"
+  //% block="measure soil moisture in percent"
   export function measureSoilMoisture(pin: AnalogPin): number {
     const value = pins.analogReadPin(pin);
     return mapValue(value, 218, 300, 0, 100);
