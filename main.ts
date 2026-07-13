@@ -1,15 +1,28 @@
 //% color="#FFC0CB" block="InnRaum"
 namespace InnRaum {
   /**
-   * Shows a greeting on the LED-Pad
+   * Sets the color of LED 0 & 1 (the eyes)
+   * @param color: the color set for LED 0 & 1
    */
-  //% block="show gretting"
-  export function showMessage(): void {
-    basic.showString('hello world');
+  //% block="set color for eyes"
+  export function setcolorEyes(color: NeoPixelColors): void {
+    const leds = robotbit.rgb();
+
+    leds.setPixelColor(0, neopixel.colors(color));
+    leds.setPixelColor(1, neopixel.colors(color));
+    leds.show();
   }
 
-  //% block="wait for %ms ms"
-  export function waitMs(ms: number): void {
-    basic.pause(ms);
+  /**
+   * Sets the color of LED 2 & 3 (the feeler)
+   * @param color : the color set for LED 2 & 3
+   */
+  //% block="set color for feeler"
+  export function setcolorFeeler(color: NeoPixelColors): void {
+    const leds = robotbit.rgb();
+
+    leds.setPixelColor(2, neopixel.colors(color));
+    leds.setPixelColor(3, neopixel.colors(color));
+    leds.show();
   }
 }
