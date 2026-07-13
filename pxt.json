@@ -6,7 +6,7 @@
         "core": "*",
         "microphone": "*",
         "robotbit": "github:kittenbot/pxt-robotbit",
-        "sonar": "https://github.com/microsoft/pxt-sonar"
+        "sonar": "github:microsoft/pxt-sonar#v0.0.6"
     },
     "files": [
         "main.ts",
