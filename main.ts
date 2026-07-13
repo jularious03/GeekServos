@@ -27,20 +27,26 @@ namespace InnRaum {
   }
 
   /**
-   *
-   * @returns the measurement of soil moisture sensor in percent
+   * Measures the soil moisture in percent.
+   * @param pin analog pin connected to the sensor, eg: AnalogPin.P0
    */
-  //% block="measure soil moisture %pin in percent"
+  //% blockId="measure_soil_moisture"
+  //% block="measure soil moisture at $pin in percent"
+  //% pin.defl=AnalogPin.P0
   export function measureSoilMoisture(pin: AnalogPin): number {
     const value = pins.analogReadPin(pin);
     return mapValue(value, 218, 300, 0, 100);
   }
 
   /**
-   *
-   * @returns the measurement of the ultrasonic sensor in centimeter
+   * Measures the distance using an ultrasonic sensor.
+   * @param trigPin pin connected to TRIG, eg: DigitalPin.P1
+   * @param echoPin pin connected to ECHO, eg: DigitalPin.P2
    */
-  //% block="measure distance in cm with %trigPin and %echoPin"
+  //% blockId="measure_ultrasonic_distance"
+  //% block="measure distance in cm with TRIG $trigPin and ECHO $echoPin"
+  //% trigPin.defl=DigitalPin.P1
+  //% echoPin.defl=DigitalPin.P2
   export function measureDistance(
     trigPin: DigitalPin,
     echoPin: DigitalPin,
