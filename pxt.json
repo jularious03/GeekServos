@@ -6,7 +6,8 @@
         "core": "*",
         "microphone": "*",
         "robotbit": "github:kittenbot/pxt-robotbit",
-        "sonar": "github:microsoft/pxt-sonar#v0.0.6"
+        "sonar": "github:microsoft/pxt-sonar#v0.0.6",
+        "BME280": "github:makecode-extensions/BME280"
     },
     "files": [
         "main.ts",
