@@ -1,5 +1,14 @@
+enum CCS811Measurement {
+  //% block="eCO2"
+  ECO2 = 0,
+  //% block="TVOC"
+  TVOC = 1,
+}
+
 //% color="#FFC0CB" block="InnRaum"
 namespace InnRaum {
+  let ccs811WarmedUp = false;
+
   //% blockId="set_color_eyes"
   //% block="set $color for eyes"
   //% color.defl=NeoPixelColors.Red
@@ -66,5 +75,52 @@ namespace InnRaum {
       ((value - inputMin) * (outputMax - outputMin)) / (inputMax - inputMin) +
       outputMin
     );
+  }
+
+  /**
+   * Warms up the CCS811 for two minutes on the first call and then returns
+   * either eCO2 in ppm or TVOC in ppb. Returns -1 on an error.
+   */
+  //% blockId="measure_ccs811_air_quality"
+  //% block="measure CCS811 $measurement after warm-up"
+  //% measurement.defl=CCS811Measurement.ECO2
+  export function measureAirQuality(measurement: CCS811Measurement): number {
+    if (!ccs811WarmedUp) {
+      const sensorFound = CCS811.begin(CCS811Address.Address0x5A);
+
+      if (!sensorFound) {
+        serial.writeLine('CCS811 nicht gefunden');
+        serial.writeValue('Hardware-ID', CCS811.hardwareID());
+        return -1;
+      }
+
+      serial.writeLine('CCS811 Aufwaermphase gestartet');
+      basic.pause(120000);
+      ccs811WarmedUp = true;
+      serial.writeLine('CCS811 Aufwaermphase beendet');
+    }
+
+    // Normally a new sample is available every second. The timeout prevents
+    // the program from blocking forever if the sensor is disconnected.
+    const timeoutAt = input.runningTime() + 5000;
+    while (!CCS811.readData()) {
+      if (CCS811.errorCode() != 0) {
+        serial.writeValue('CCS811 Fehler', CCS811.errorCode());
+        return -1;
+      }
+
+      if (input.runningTime() >= timeoutAt) {
+        serial.writeLine('CCS811 Zeitueberschreitung');
+        return -1;
+      }
+
+      basic.pause(100);
+    }
+
+    if (measurement == CCS811Measurement.TVOC) {
+      return CCS811.TVOC();
+    }
+
+    return CCS811.eCO2();
   }
 }

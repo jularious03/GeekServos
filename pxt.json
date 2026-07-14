@@ -11,6 +11,7 @@
     },
     "files": [
         "main.ts",
+        "ccs811.ts",
         "README.md"
     ],
     "testFiles": [

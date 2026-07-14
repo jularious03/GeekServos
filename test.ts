@@ -17,3 +17,9 @@ basic.showNumber(distance);
 basic.showString('Soil Moisture: ');
 const soilMoisture = InnRaum.measureSoilMoisture(AnalogPin.P0);
 basic.showNumber(soilMoisture);
+
+// test for CCS811: the first call waits two minutes for warm-up
+basic.showString('W');
+const eco2 = InnRaum.measureAirQuality(CCS811Measurement.ECO2);
+serial.writeValue('eCO2 ppm', eco2);
+basic.showNumber(eco2);
