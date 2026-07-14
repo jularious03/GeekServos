@@ -5,8 +5,8 @@ enum CCS811Measurement {
   TVOC = 1,
 }
 
-//% color="#FFC0CB" block="InnRaum"
-namespace InnRaum {
+//% color="#204830" block="MintKöpfchen"
+namespace MintKoepfchen {
   let ccs811WarmedUp = false;
 
   //% blockId="set_color_eyes"
