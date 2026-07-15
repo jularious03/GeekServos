@@ -123,4 +123,8 @@ namespace MintKoepfchen {
 
     return CCS811.eCO2();
   }
+
+  export function readWaterTemperature(pinNumber: number): number {
+    return ModulePlus.Temperature(pinNumber) / 10 ;
+  }
 }

@@ -19,7 +19,10 @@ const soilMoisture = MintKoepfchen.measureSoilMoisture(AnalogPin.P0);
 basic.showNumber(soilMoisture);
 
 // test for CCS811: the first call waits two minutes for warm-up
-basic.showString('W');
 const eco2 = MintKoepfchen.measureAirQuality(CCS811Measurement.ECO2);
 serial.writeValue('eCO2 ppm', eco2);
 basic.showNumber(eco2);
+
+// test for DS18B20
+const temp = MintKoepfchen.readWaterTemperature(1);
+basic.showNumber(temp);
