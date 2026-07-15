@@ -124,7 +124,9 @@ namespace MintKoepfchen {
     return CCS811.eCO2();
   }
 
+  //% blockId=dstemp block="Get Water Temperature Pin %pinNumber"
+  //% group="Water Temperature Sensor" weight=99
   export function readWaterTemperature(pinNumber: number): number {
-    return ModulePlus.Temperature(pinNumber) / 10 ;
+    return ModulePlus.Temperature(pinNumber) / 10;
   }
 }
