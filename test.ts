@@ -26,3 +26,12 @@ basic.showNumber(eco2);
 // test for DS18B20
 const temp = MintKoepfchen.readWaterTemperature(1);
 basic.showNumber(temp);
+
+// test for line tracker sensor
+basic.forever(() => {
+  if (MintKoepfchen.readLineTracker(DigitalPin.P1) == 0) {
+    basic.showIcon(IconNames.Yes);
+  } else {
+    basic.showIcon(IconNames.No);
+  }
+});

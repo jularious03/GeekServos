@@ -129,4 +129,14 @@ namespace MintKoepfchen {
   export function readWaterTemperature(pinNumber: number): number {
     return ModulePlus.Temperature(pinNumber) / 10;
   }
+
+  /**
+   * Prüft, ob eine schwarze Linie erkannt wurde.
+   */
+  //% block="Linie an %pin erkannt"
+  //% pin.defl=DigitalPin.P1
+  export function readLineTracker(pin: DigitalPin): number {
+    pins.setPull(pin, PinPullMode.PullUp);
+    return pins.digitalReadPin(pin);
+  }
 }
