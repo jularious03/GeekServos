@@ -1,7 +1,7 @@
 {
     "name": "geekservos",
     "version": "0.0.2",
-    "description": "RoboBit Extension",
+    "description": "RoboBit-Erweiterung",
     "dependencies": {
         "core": "*",
         "microphone": "*",

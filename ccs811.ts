@@ -1,13 +1,13 @@
 /**
- * Minimal CCS811 driver for Microsoft MakeCode / BBC micro:bit.
+ * Minimaler CCS811-Treiber für Microsoft MakeCode und den BBC micro:bit.
  *
- * The initialization and read sequence follows Adafruit_CCS811:
- * SW reset -> hardware ID check -> application start -> 1 second drive mode.
+ * Die Initialisierungs- und Lesereihenfolge folgt Adafruit_CCS811:
+ * Software-Reset -> Hardware-ID-Prüfung -> Anwendungsstart -> Messung jede Sekunde.
  *
- * The Robotbit I2C connector is the normal micro:bit I2C bus:
- * SCL = P19, SDA = P20, 3.3 V and GND.
- * nWAKE must be low during I2C communication. Many breakout boards already
- * pull nWAKE low. Otherwise connect nWAKE to GND.
+ * Der I2C-Anschluss des Robotbit verwendet den normalen I2C-Bus des micro:bit:
+ * SCL = P19, SDA = P20, 3,3 V und GND.
+ * nWAKE muss während der I2C-Kommunikation auf LOW liegen. Viele Breakout-Boards
+ * ziehen nWAKE bereits auf LOW. Andernfalls muss nWAKE mit GND verbunden werden.
  */
 
 enum CCS811Address {
@@ -18,13 +18,13 @@ enum CCS811Address {
 }
 
 enum CCS811DriveMode {
-  //% block="every second"
+  //% block="jede Sekunde"
   EverySecond = 1,
-  //% block="every 10 seconds"
+  //% block="alle 10 Sekunden"
   Every10Seconds = 2,
-  //% block="every 60 seconds"
+  //% block="alle 60 Sekunden"
   Every60Seconds = 3,
-  //% block="every 250 milliseconds"
+  //% block="alle 250 Millisekunden"
   Every250Milliseconds = 4,
 }
 
@@ -78,8 +78,9 @@ namespace CCS811 {
     const command = pins.createBuffer(1);
     command[0] = register;
 
-    // Repeated start: keep control of the bus between register selection
-    // and the following read, like Wire.write_then_read on the ESP32.
+    // Wiederholter Start: Die Kontrolle über den Bus bleibt zwischen der
+    // Registerauswahl und dem folgenden Lesen erhalten, wie bei
+    // Wire.write_then_read auf dem ESP32.
     pins.i2cWriteBuffer(i2cAddress, command, true);
     return pins.i2cReadBuffer(i2cAddress, length, false);
   }
@@ -98,14 +99,16 @@ namespace CCS811 {
   }
 
   /**
-   * Initialize the CCS811 and start periodic measurements.
-   * Returns false if the hardware ID is not 0x81 or application mode fails.
-   */
+   * Initialisiert den CCS811 und startet regelmäßige Messungen.
+   * Gibt falsch zurück, wenn die Hardware-ID nicht 0x81 ist oder der
+   * Anwendungsmodus nicht gestartet werden kann.
+  */
   //% blockId=ccs811_begin
-  //% block="initialize CCS811 at %address"
+  //% block="CCS811-Sensor mit Adresse $address starten"
+  //% blockNamespace=MintKoepfchen group="Sensoren"
   //% address.defl=CCS811Address.Address0x5A
   //% weight=100
-  export function begin(
+  export function starteSensor(
     address: CCS811Address = CCS811Address.Address0x5A,
   ): boolean {
     i2cAddress = address;
@@ -114,7 +117,7 @@ namespace CCS811 {
     tvocValue = 0;
     errorValue = 0;
 
-    // The sensor needs about 20 ms after power-up before accepting I2C.
+    // Der Sensor benötigt nach dem Einschalten etwa 20 ms, bevor er I2C-Befehle annimmt.
     basic.pause(100);
 
     softwareReset();
@@ -124,7 +127,7 @@ namespace CCS811 {
       return false;
     }
 
-    // APP_START is a command without a data byte.
+    // APP_START ist ein Befehl ohne Datenbyte.
     writeCommand(APP_START);
     basic.pause(100);
 
@@ -134,24 +137,26 @@ namespace CCS811 {
       return false;
     }
 
-    setDriveMode(CCS811DriveMode.EverySecond);
+    setzeMessintervall(CCS811DriveMode.EverySecond);
     started = true;
     return true;
   }
 
-  /** Set how often the CCS811 produces a new measurement. */
+  /** Legt fest, wie oft der CCS811 einen neuen Messwert erzeugt. */
   //% blockId=ccs811_set_drive_mode
-  //% block="set CCS811 measurement interval to %mode"
+  //% block="CCS811 misst $mode"
+  //% blockNamespace=MintKoepfchen group="Sensoren"
   //% weight=90
-  export function setDriveMode(mode: CCS811DriveMode): void {
+  export function setzeMessintervall(mode: CCS811DriveMode): void {
     writeRegister(MEAS_MODE, (mode & 0x07) << 4);
   }
 
-  /** Return true when a new eCO2/TVOC measurement can be read. */
+  /** Gibt wahr zurück, wenn ein neuer eCO2-/TVOC-Messwert gelesen werden kann. */
   //% blockId=ccs811_data_available
-  //% block="CCS811 data available"
+  //% block="hat der CCS811 neue Daten?"
+  //% blockNamespace=MintKoepfchen group="Sensoren"
   //% weight=80
-  export function dataAvailable(): boolean {
+  export function sindNeueDatenDa(): boolean {
     if (!started) {
       return false;
     }
@@ -160,14 +165,15 @@ namespace CCS811 {
   }
 
   /**
-   * Read and cache the newest eCO2 and TVOC measurement.
-   * Returns true only when fresh, error-free data was read.
-   */
+   * Liest den neuesten eCO2- und TVOC-Messwert und speichert ihn zwischen.
+   * Gibt nur dann wahr zurück, wenn neue, fehlerfreie Daten gelesen wurden.
+  */
   //% blockId=ccs811_read_data
-  //% block="read CCS811 data"
+  //% block="neue Daten vom CCS811 einlesen"
+  //% blockNamespace=MintKoepfchen group="Sensoren"
   //% weight=70
-  export function readData(): boolean {
-    if (!dataAvailable()) {
+  export function liesNeueDaten(): boolean {
+    if (!sindNeueDatenDa()) {
       return false;
     }
 
@@ -179,51 +185,56 @@ namespace CCS811 {
     return (data[4] & STATUS_ERROR) == 0;
   }
 
-  /** Return the last successfully read equivalent CO2 value in ppm. */
+  /** Gibt den zuletzt erfolgreich gelesenen äquivalenten CO2-Wert in ppm zurück. */
   //% blockId=ccs811_eco2
-  //% block="CCS811 eCO2 (ppm)"
+  //% block="letzten CO₂-Schätzwert lesen (ppm)"
+  //% blockNamespace=MintKoepfchen group="Sensoren"
   //% weight=60
-  export function eCO2(): number {
+  export function letzterECO2Wert(): number {
     return co2Value;
   }
 
-  /** Return the last successfully read total VOC value in ppb. */
+  /** Gibt den zuletzt erfolgreich gelesenen Gesamt-VOC-Wert in ppb zurück. */
   //% blockId=ccs811_tvoc
-  //% block="CCS811 TVOC (ppb)"
+  //% block="letzte Luftschadstoffe lesen (TVOC, ppb)"
+  //% blockNamespace=MintKoepfchen group="Sensoren"
   //% weight=50
-  export function TVOC(): number {
+  export function letzterTVOCWert(): number {
     return tvocValue;
   }
 
-  /** Return the last CCS811 error register value. Zero means no error. */
+  /** Gibt den letzten Wert des CCS811-Fehlerregisters zurück. Null bedeutet: kein Fehler. */
   //% blockId=ccs811_error
-  //% block="CCS811 error code"
+  //% block="letzten CCS811-Fehler lesen"
+  //% blockNamespace=MintKoepfchen group="Sensoren"
   //% advanced=true
   //% weight=30
-  export function errorCode(): number {
+  export function letzterFehlercode(): number {
     return errorValue;
   }
 
-  /** Read the hardware ID. A connected CCS811 returns 0x81 (129). */
+  /** Liest die Hardware-ID. Ein angeschlossener CCS811 gibt 0x81 (129) zurück. */
   //% blockId=ccs811_hardware_id
-  //% block="CCS811 hardware ID"
+  //% block="CCS811-Hardware-ID lesen"
+  //% blockNamespace=MintKoepfchen group="Sensoren"
   //% advanced=true
   //% weight=20
-  export function hardwareID(): number {
+  export function liesHardwareID(): number {
     return readRegister(HW_ID);
   }
 
   /**
-   * Supply humidity and temperature, for example from a BME280, to improve
-   * the CCS811 compensation algorithm.
-   */
+   * Übergibt Luftfeuchtigkeit und Temperatur, zum Beispiel von einem BME280,
+   * um den Kompensationsalgorithmus des CCS811 zu verbessern.
+  */
   //% blockId=ccs811_environmental_data
-  //% block="set CCS811 relative humidity %humidity and temperature %temperature °C"
+  //% block="CCS811 mit Luftfeuchtigkeit $humidity \\% und Temperatur $temperature °C verbessern"
+  //% blockNamespace=MintKoepfchen group="Sensoren"
   //% humidity.min=0 humidity.max=100 humidity.defl=50
   //% temperature.min=-25 temperature.max=50 temperature.defl=25
   //% advanced=true
   //% weight=40
-  export function setEnvironmentalData(
+  export function setzeUmgebungswerte(
     humidity: number,
     temperature: number,
   ): void {

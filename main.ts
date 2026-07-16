@@ -1,18 +1,19 @@
 enum CCS811Measurement {
-  //% block="eCO2"
+  //% block="CO₂-Schätzwert (eCO₂, ppm)"
   ECO2 = 0,
-  //% block="TVOC"
+  //% block="Luftschadstoffe (TVOC, ppb)"
   TVOC = 1,
 }
 
-//% color=#204830 icon="\uf0c0" block="MintKöpfchen"
+//% color=#204830 icon="\uf0c0" block="MintKöpfchen" groups='["Sensoren", "Farben & LEDs", "GeekServos"]'
 namespace MintKoepfchen {
   let ccs811WarmedUp = false;
 
   //% blockId="set_color_eyes"
-  //% block="set $color for eyes"
+  //% block="Augen leuchten in $color"
   //% color.defl=NeoPixelColors.Red
-  export function setcolorEyes(color: NeoPixelColors): void {
+  //% group="Farben & LEDs"
+  export function setzeAugenfarbe(color: NeoPixelColors): void {
     const leds = robotbit.rgb();
 
     leds.setPixelColor(0, neopixel.colors(color));
@@ -21,9 +22,10 @@ namespace MintKoepfchen {
   }
 
   //% blockId="set_color_feeler"
-  //% block="set $color for feeler"
+  //% block="Fühler leuchten in $color"
   //% color.defl=NeoPixelColors.Red
-  export function setcolorFeeler(color: NeoPixelColors): void {
+  //% group="Farben & LEDs"
+  export function setzeFuehlerfarbe(color: NeoPixelColors): void {
     const leds = robotbit.rgb();
 
     leds.setPixelColor(2, neopixel.colors(color));
@@ -32,27 +34,29 @@ namespace MintKoepfchen {
   }
 
   /**
-   * Measures the soil moisture in percent.
-   * @param pin analog pin connected to the sensor, eg: AnalogPin.P0
-   */
+   * Misst die Bodenfeuchtigkeit in Prozent.
+   * @param pin analoger Pin, an den der Sensor angeschlossen ist, z. B. AnalogPin.P0
+  */
   //% blockId="measure_soil_moisture"
-  //% block="measure soil moisture at $pin in percent"
+  //% block="Bodenfeuchtigkeit an $pin messen (\\%)"
   //% pin.defl=AnalogPin.P0
-  export function measureSoilMoisture(pin: AnalogPin): number {
+  //% group="Sensoren"
+  export function missBodenfeuchtigkeit(pin: AnalogPin): number {
     const value = pins.analogReadPin(pin);
     return mapValue(value, 218, 300, 0, 100);
   }
 
   /**
-   * Measures the distance using an ultrasonic sensor.
-   * @param trigPin pin connected to TRIG, eg: DigitalPin.P1
-   * @param echoPin pin connected to ECHO, eg: DigitalPin.P2
-   */
+   * Misst die Entfernung mit einem Ultraschallsensor.
+   * @param trigPin Pin, der mit TRIG verbunden ist, z. B. DigitalPin.P1
+   * @param echoPin Pin, der mit ECHO verbunden ist, z. B. DigitalPin.P2
+  */
   //% blockId="measure_ultrasonic_distance"
-  //% block="measure distance in cm with TRIG $trigPin and ECHO $echoPin"
+  //% block="Abstand mit Ultraschall messen (cm) TRIG $trigPin ECHO $echoPin"
   //% trigPin.defl=DigitalPin.P1
   //% echoPin.defl=DigitalPin.P2
-  export function measureDistance(
+  //% group="Sensoren"
+  export function missAbstand(
     trigPin: DigitalPin,
     echoPin: DigitalPin,
   ): number {
@@ -78,39 +82,40 @@ namespace MintKoepfchen {
   }
 
   /**
-   * Warms up the CCS811 for two minutes on the first call and then returns
-   * either eCO2 in ppm or TVOC in ppb. Returns -1 on an error.
-   */
+   * Wärmt den CCS811 beim ersten Aufruf zwei Minuten lang auf und gibt danach
+   * entweder eCO2 in ppm oder TVOC in ppb zurück. Gibt bei einem Fehler -1 zurück.
+  */
   //% blockId="measure_ccs811_air_quality"
-  //% block="measure CCS811 $measurement after warm-up"
+  //% block="Luftqualität mit CCS811 messen: $measurement"
   //% measurement.defl=CCS811Measurement.ECO2
-  export function measureAirQuality(measurement: CCS811Measurement): number {
+  //% group="Sensoren"
+  export function missLuftqualitaet(measurement: CCS811Measurement): number {
     if (!ccs811WarmedUp) {
-      const sensorFound = CCS811.begin(CCS811Address.Address0x5A);
+      const sensorFound = CCS811.starteSensor(CCS811Address.Address0x5A);
 
       if (!sensorFound) {
         serial.writeLine('CCS811 nicht gefunden');
-        serial.writeValue('Hardware-ID', CCS811.hardwareID());
+        serial.writeValue('Hardware-ID', CCS811.liesHardwareID());
         return -1;
       }
 
-      serial.writeLine('CCS811 Aufwaermphase gestartet');
+      serial.writeLine('CCS811-Aufwärmphase gestartet');
       basic.pause(120000);
       ccs811WarmedUp = true;
-      serial.writeLine('CCS811 Aufwaermphase beendet');
+      serial.writeLine('CCS811-Aufwärmphase beendet');
     }
 
-    // Normally a new sample is available every second. The timeout prevents
-    // the program from blocking forever if the sensor is disconnected.
+    // Normalerweise steht jede Sekunde ein neuer Messwert bereit. Die Zeitbegrenzung
+    // verhindert, dass das Programm bei getrenntem Sensor dauerhaft blockiert.
     const timeoutAt = input.runningTime() + 5000;
-    while (!CCS811.readData()) {
-      if (CCS811.errorCode() != 0) {
-        serial.writeValue('CCS811 Fehler', CCS811.errorCode());
+    while (!CCS811.liesNeueDaten()) {
+      if (CCS811.letzterFehlercode() != 0) {
+        serial.writeValue('CCS811 Fehler', CCS811.letzterFehlercode());
         return -1;
       }
 
       if (input.runningTime() >= timeoutAt) {
-        serial.writeLine('CCS811 Zeitueberschreitung');
+        serial.writeLine('CCS811-Zeitüberschreitung');
         return -1;
       }
 
@@ -118,24 +123,31 @@ namespace MintKoepfchen {
     }
 
     if (measurement == CCS811Measurement.TVOC) {
-      return CCS811.TVOC();
+      return CCS811.letzterTVOCWert();
     }
 
-    return CCS811.eCO2();
-  }
-
-  //% blockId=dstemp block="Get Water Temperature Pin %pinNumber"
-  //% group="Water Temperature Sensor" weight=99
-  export function readWaterTemperature(pinNumber: number): number {
-    return ModulePlus.Temperature(pinNumber) / 10;
+    return CCS811.letzterECO2Wert();
   }
 
   /**
-   * Prüft, ob eine schwarze Linie erkannt wurde.
+   * Misst die Wassertemperatur am angegebenen Pin in Grad Celsius.
+   * @param pinNumber Pin, an den die Datenleitung des Sensors angeschlossen ist, z. B. 1
    */
-  //% block="Linie an %pin erkannt"
+  //% blockId=dstemp block="Wassertemperatur an $pin messen (°C)"
+  //% group="Sensoren" weight=99
+  export function missWassertemperatur(pin: DigitalPin): number {
+    return ModulePlus.Temperature(pin) / 10;
+  }
+
+  /**
+   * Liest den digitalen Rohwert des Linienfolgers aus.
+   * Der Block gibt abhängig vom Sensor und Untergrund 0 oder 1 zurück.
+   * @param pin digitaler Pin, an den der Sensor angeschlossen ist, z. B. DigitalPin.P1
+   */
+  //% block="Wert vom Linienfolger an $pin lesen (0 oder 1)"
   //% pin.defl=DigitalPin.P1
-  export function readLineTracker(pin: DigitalPin): number {
+  //% group="Sensoren"
+  export function liesLinienfolgerWert(pin: DigitalPin): number {
     pins.setPull(pin, PinPullMode.PullUp);
     return pins.digitalReadPin(pin);
   }
