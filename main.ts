@@ -5,7 +5,7 @@ enum CCS811Measurement {
   TVOC = 1,
 }
 
-//% color=#204830 icon="\uf0c0" block="MintKöpfchen" groups='["Sensoren", "Farben & LEDs", "GeekServos"]'
+//% color=#204830 icon="\uf0c0" block="MintKöpfchen" groups='["Sensoren", "Farben & LEDs", "Servos $ Motoren"]'
 namespace MintKoepfchen {
   let ccs811WarmedUp = false;
 

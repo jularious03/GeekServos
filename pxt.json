@@ -1,7 +1,7 @@
 {
-    "name": "geekservos",
-    "version": "0.0.2",
-    "description": "RoboBit-Erweiterung",
+    "name": "mintkoepfchen-robotik",
+    "version": "0.1.0",
+    "description": "MakeCode-Erweiterung für Sensoren, LEDs, Servos und Robotik",
     "dependencies": {
         "core": "*",
         "microphone": "*",

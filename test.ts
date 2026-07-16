@@ -122,5 +122,5 @@ input.onButtonPressed(Button.B, () => {
   starteAusgewaehltenTest();
 });
 
-serial.writeLine('GeekServos-Hardwaretest bereit');
+serial.writeLine('Mintköpfchen-Robotik-Hardwaretest bereit');
 basic.showNumber(ausgewaehlterTest);

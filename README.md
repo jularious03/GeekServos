@@ -1,7 +1,6 @@
-# GeekServos
+# Mintköpfchen-Robotik
 
-Erweiterung für den Microsoft MakeCode Editor, die die Verwendung von GeekServos,
-insbesondere von 360°-Servos, vereinfachen soll.
+MakeCode-Erweiterung für Sensoren, LEDs, Servos und Robotik.
 
 ## Blöcke
 
