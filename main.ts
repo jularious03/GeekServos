@@ -5,7 +5,7 @@ enum CCS811Measurement {
   TVOC = 1,
 }
 
-//% color=#204830 icon="\uf0c0" block="MintKöpfchen" groups='["Sensoren", "Farben & LEDs", "Servos $ Motoren"]'
+//% color=#204830 icon="\uf0c0" block="MINT-Köpfchen" groups='["Sensoren", "Farben & LEDs", "Servos $ Motoren"]'
 namespace MintKoepfchen {
   let ccs811WarmedUp = false;
 
@@ -36,7 +36,7 @@ namespace MintKoepfchen {
   /**
    * Misst die Bodenfeuchtigkeit in Prozent.
    * @param pin analoger Pin, an den der Sensor angeschlossen ist, z. B. AnalogPin.P0
-  */
+   */
   //% blockId="measure_soil_moisture"
   //% block="Bodenfeuchtigkeit an $pin messen (\\%)"
   //% pin.defl=AnalogPin.P0
@@ -50,7 +50,7 @@ namespace MintKoepfchen {
    * Misst die Entfernung mit einem Ultraschallsensor.
    * @param trigPin Pin, der mit TRIG verbunden ist, z. B. DigitalPin.P1
    * @param echoPin Pin, der mit ECHO verbunden ist, z. B. DigitalPin.P2
-  */
+   */
   //% blockId="measure_ultrasonic_distance"
   //% block="Abstand mit Ultraschall messen (cm) TRIG $trigPin ECHO $echoPin"
   //% trigPin.defl=DigitalPin.P1
@@ -84,7 +84,7 @@ namespace MintKoepfchen {
   /**
    * Wärmt den CCS811 beim ersten Aufruf zwei Minuten lang auf und gibt danach
    * entweder eCO2 in ppm oder TVOC in ppb zurück. Gibt bei einem Fehler -1 zurück.
-  */
+   */
   //% blockId="measure_ccs811_air_quality"
   //% block="Luftqualität mit CCS811 messen: $measurement"
   //% measurement.defl=CCS811Measurement.ECO2
